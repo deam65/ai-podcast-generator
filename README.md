@@ -6,8 +6,15 @@
 
 ### I want to keep up with stuff like policy changes, world conflict, economic state, 
 
-## Backend will be a microservices-based, event-driven architecture. Initially, it will just operate as a daily ran job that pushes generated podcasts to Spotify daily
+## Backend will be a microservices-based, event-driven architecture. Initially, it will just operate as a daily ran job that saves specific-topic podcasts to cloud storage that I can access from my laptop/phone
 
+### However, I will eventually want to expand it to a web client that allows users to:
+1. choose the topics they want to generate a podcast for
+2. choose the specific voice they want to hear
+3. 
+
+
+## Microservices
 1. job initiation API
     - takes incoming API requests to begin the content retrieval/podcast generation job loop
     - should ideally respond with a job UUID and SSE endpoint, in case I want to add a web interface
