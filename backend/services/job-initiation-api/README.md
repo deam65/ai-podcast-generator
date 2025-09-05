@@ -174,6 +174,10 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="user:your-email@gmail.com" \
+  --role="roles/run.invoker"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="user:your-email@gmail.com" \
   --role="roles/storage.admin"
 ```
 
@@ -201,15 +205,6 @@ gcloud run deploy job-initiation-api \
   --cpu 1
 ```
 
-### Fix Authentication (if needed)
-If you get 403 Forbidden errors:
-```bash
-gcloud run services add-iam-policy-binding job-initiation-api \
-  --region us-central1 \
-  --member="allUsers" \
-  --role="roles/run.invoker"
-```
-
 ## Production Testing
 
 ### Get Service URL
@@ -222,25 +217,41 @@ gcloud run services describe job-initiation-api \
 ### Test Production Endpoints
 ```bash
 # Set your service URL
-export SERVICE_URL="https://job-initiation-api-xxxxxxxxx-uc.a.run.app"
+export SERVICE_URL="$(
+  gcloud run services describe job-initiation-api \
+    --region us-central1 \
+    --format "value(status.url)"
+)"
+
+# Set your identity token
+export IDENTITY_TOKEN="$(
+  gcloud auth print-identity-token
+)"
 
 # Test health
-curl $SERVICE_URL/health
+curl $SERVICE_URL/health \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $IDENTITY_TOKEN"
 
 # Test job creation
-curl -X POST $SERVICE_URL/api/v1/jobs \
+curl -X POST "$SERVICE_URL/api/v1/jobs" \
   -H "Content-Type: application/json" \
-  -d '{
-    "numArticles": 3,
-    "topics": ["technology"],
-    "source": "news"
-  }'
+  -H "Authorization: Bearer $IDENTITY_TOKEN" \
+  -d "{
+    \"numArticles\": 3,
+    \"topics\": [\"technology\"],
+    \"source\": \"news\"
+  }"
 
 # Test job retrieval (replace {jobId} with actual ID)
-curl $SERVICE_URL/api/v1/jobs/{jobId}
+curl $SERVICE_URL/api/v1/jobs/{jobId} \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $IDENTITY_TOKEN"
 
-# Test SSE endpoint
-curl -N $SERVICE_URL/api/v1/jobs/{jobId}/events
+# Test SSE endpoint (replace {jobId} with actual ID)
+curl -N $SERVICE_URL/api/v1/jobs/{jobId}/events \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $IDENTITY_TOKEN"
 ```
 
 ## Monitoring and Logs
@@ -269,8 +280,12 @@ gcloud run services describe job-initiation-api --region us-central1
 ### Common Issues
 
 1. **403 Forbidden Error**
-   - Run the authentication fix command above
-   - Verify service allows unauthenticated access
+  - Make sure you have the run.invoker role assigned to your authed user
+    ```bash
+    gcloud run services add-iam-policy-binding job-initiation-api \
+        --member='user:your-email@gmail.com' \
+        --role='roles/run.invoker'
+    ```
 
 2. **Firestore Connection Issues**
    - Ensure Firestore database exists and is in Native mode
