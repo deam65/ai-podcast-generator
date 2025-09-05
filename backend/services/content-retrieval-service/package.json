@@ -1,7 +1,7 @@
 {
-  "name": "job-initiation-api",
+  "name": "content-retrieval-service",
   "version": "1.0.0",
-  "description": "Job initiation API for AI Podcast Generator microservices",
+  "description": "content-retrieval-service microservice for AI Podcast Generator",
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
@@ -14,7 +14,6 @@
     "microservice",
     "api",
     "podcast",
-    "job-queue",
     "typescript"
   ],
   "author": "Darren Eam",
