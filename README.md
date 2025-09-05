@@ -1,20 +1,19 @@
 # AI Podcast Generator
 
-## Description: A full-stack application to scrape the web for trending news articles, then generates podcast audio
+Description: A full-stack application to scrape the web for trending news articles, then generates podcast audio
 
-### Motivation: I always find that I'm not up to date on current events, particularly because of the amount of "bloat" i have to deal with in order to keep up (like ads, unnecessary content on social media, biased viewpoints, etc). It always feels like I have to actively defend my focus while reading up on current events, which is excessively tiring. This project aims to do the searching for me, and present it to me in a way that makes it easy to digest but also with minimal bloat.
+Motivation: I always find that I'm not up to date on current events, particularly because of the amount of "bloat" i have to deal with in order to keep up (like ads, unnecessary content on social media, biased viewpoints, etc). It always feels like I have to actively defend my focus while reading up on current events, which is excessively tiring. This project aims to do the searching for me, and present it to me in a way that makes it easy to digest but also with minimal bloat.
 
-### I want to keep up with stuff like policy changes, world conflict, economic state, 
+I want to keep up with stuff like policy changes, world conflict, economic state, etc., without having to go through all this other stuff.
 
-## Backend will be a microservices-based, event-driven architecture. Initially, it will just operate as a daily ran job that saves specific-topic podcasts to cloud storage that I can access from my laptop/phone
+##### Backend will be a microservices-based, event-driven architecture. Initially, it will just operate as a daily ran job that saves specific-topic podcasts to cloud storage that I can access from my laptop/phone
 
-### However, I will eventually want to expand it to a web client that allows users to:
-1. choose the topics they want to generate a podcast for
-2. choose the specific voice they want to hear
-3. 
+##### However, I will eventually want to expand it to a web client that allows users to:
+1. select the topics they want to generate a podcast for
+2. select the specific voice they want to hear
 
 
-## Microservices
+### Microservices
 1. job initiation API
     - takes incoming API requests to begin the content retrieval/podcast generation job loop
     - should ideally respond with a job UUID and SSE endpoint, in case I want to add a web interface
