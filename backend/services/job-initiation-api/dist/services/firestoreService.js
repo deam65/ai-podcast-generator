@@ -30,7 +30,7 @@ class FirestoreService {
                 id: job.id,
                 numArticles: job.numArticles,
                 topics: job.topics,
-                source: job.source,
+                sources: job.sources,
                 status: job.status,
                 createdAt: firestore_1.Timestamp.fromDate(job.createdAt),
                 updatedAt: firestore_1.Timestamp.fromDate(job.updatedAt),

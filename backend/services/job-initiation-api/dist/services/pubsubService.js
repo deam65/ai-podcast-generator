@@ -31,7 +31,7 @@ class PubSubService {
                 sseEndpoint: job.sseEndpoint,
                 numArticles: job.numArticles,
                 topics: job.topics,
-                source: job.source
+                sources: job.sources
             };
             const messageData = JSON.stringify(messagePayload);
             const topic = this.pubsub.topic(this.topicName);
@@ -39,7 +39,6 @@ class PubSubService {
                 data: Buffer.from(messageData, 'utf8'),
                 attributes: {
                     jobId: job.id,
-                    source: job.source,
                     timestamp: new Date().toISOString()
                 }
             });

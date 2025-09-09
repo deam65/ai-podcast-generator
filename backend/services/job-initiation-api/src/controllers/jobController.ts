@@ -71,7 +71,7 @@ export class JobController {
         status: job.status,
         numArticles: job.numArticles,
         topics: job.topics,
-        source: job.source,
+        sources: job.sources,
         createdAt: job.createdAt.toISOString(),
         updatedAt: job.updatedAt.toISOString(),
         sseEndpoint: job.sseEndpoint
