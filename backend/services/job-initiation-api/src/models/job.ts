@@ -83,7 +83,7 @@ export type Source =
 export interface CreateJobRequest {
   numArticles: number;
   topics: string[];
-  source: 'news' | 'twitter' | 'reddit';
+  sources: Source[];
 }
 
 export interface CreateJobResponse {
