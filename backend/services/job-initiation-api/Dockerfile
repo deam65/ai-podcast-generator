@@ -11,8 +11,10 @@ COPY backend/services/job-initiation-api/package.json ./package.json.orig
 RUN sed 's|"@ai-podcast/shared-services": "file:../../shared-services"|"@ai-podcast/shared-services": "file:./ai-podcast-shared-services-1.0.0.tgz"|' package.json.orig > package.json
 
 # Copy other service files
-COPY backend/services/job-initiation-api/package-lock.json ./
 COPY backend/services/job-initiation-api/tsconfig.json ./
+
+# Regenerate package-lock.json to match the modified package.json
+RUN npm install --package-lock-only
 
 # Install all dependencies (including the packed shared-services)
 RUN npm ci
@@ -35,8 +37,8 @@ COPY backend/services/job-initiation-api/ai-podcast-shared-services-*.tgz ./
 COPY backend/services/job-initiation-api/package.json ./package.json.orig
 RUN sed 's|"@ai-podcast/shared-services": "file:../../shared-services"|"@ai-podcast/shared-services": "file:./ai-podcast-shared-services-1.0.0.tgz"|' package.json.orig > package.json
 
-# Copy package-lock.json
-COPY backend/services/job-initiation-api/package-lock.json ./
+# Regenerate package-lock.json to match the modified package.json
+RUN npm install --package-lock-only
 
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
