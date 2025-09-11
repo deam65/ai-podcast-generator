@@ -1,28 +1,19 @@
-import { PubSub } from "@google-cloud/pubsub";
+import { BasePubSubService } from "@ai-podcast/shared-services";
 import { Job } from "../models/job";
 import { logger } from "../utils/logger";
-require("dotenv").config();
 
-export class PubSubService {
-  private pubsub: PubSub;
+export class PubSubService extends BasePubSubService {
   private topicName: string;
 
   constructor() {
-    try {
-      this.pubsub = new PubSub({
-        projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-      });
+    super(logger);
 
-      this.topicName =
-        process.env.PUBSUB_CONTENT_RETRIEVAL_TOPIC || "content-retrieval";
+    this.topicName =
+      process.env.PUBSUB_CONTENT_RETRIEVAL_TOPIC || "content-retrieval";
 
-      logger.info("PubSubService initialized", {
-        topicName: this.topicName,
-      });
-    } catch (error) {
-      logger.error("Failed to initialize PubSubService", error);
-      throw new Error("PubSub initialization failed");
-    }
+    this.logger.info("PubSubService initialized", {
+      topicName: this.topicName,
+    });
   }
 
   async publishJobMessage(job: Job): Promise<void> {
@@ -35,25 +26,21 @@ export class PubSubService {
         sources: job.sources,
       };
 
-      const messageData = JSON.stringify(messagePayload);
-
-      const topic = this.pubsub.topic(this.topicName);
-
-      const messageId = await topic.publishMessage({
-        data: Buffer.from(messageData, "utf8"),
-        attributes: {
+      const messageId = await this.publishMessage(
+        this.topicName,
+        messagePayload,
+        {
           jobId: job.id,
-          timestamp: new Date().toISOString(),
-        },
-      });
+        }
+      );
 
-      logger.info("Job message published to Pub/Sub", {
+      this.logger.info("Job message published to Pub/Sub", {
         jobId: job.id,
         messageId,
         topicName: this.topicName,
       });
     } catch (error) {
-      logger.error("Failed to publish job message to Pub/Sub", {
+      this.logger.error("Failed to publish job message to Pub/Sub", {
         jobId: job.id,
         topicName: this.topicName,
         error,

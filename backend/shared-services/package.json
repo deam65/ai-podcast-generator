@@ -1,0 +1,34 @@
+{
+  "name": "@ai-podcast/shared-services",
+  "version": "1.0.0",
+  "description": "Shared utility services for AI Podcast Generator microservices",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "shared",
+    "services",
+    "google-cloud",
+    "typescript"
+  ],
+  "author": "Darren Eam",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/firestore": "^7.1.0",
+    "@google-cloud/pubsub": "^4.0.7",
+    "@google-cloud/secret-manager": "^6.1.0",
+    "dotenv": "^17.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
