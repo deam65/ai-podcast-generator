@@ -29,7 +29,8 @@ app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    service: 'job-initiation-api'
+    service: 'job-initiation-api',
+    version: '1.0.1'
   });
 });
 
