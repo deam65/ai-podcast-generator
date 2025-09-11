@@ -1,0 +1,16 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy shared-services package
+COPY backend/shared-services/package*.json ./
+COPY backend/shared-services/tsconfig.json ./
+COPY backend/shared-services/src ./src
+
+# Install dependencies and build
+RUN npm ci && npm run build
+
+# Pack the built package
+RUN npm pack
+
+# The packed file will be available as ai-podcast-shared-services-1.0.0.tgz

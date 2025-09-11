@@ -3,22 +3,22 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy shared-services and build it first
-COPY backend/shared-services ./shared-services
-WORKDIR /app/shared-services
-RUN npm ci && npm run build
+# Copy the packed shared-services (created by cloudbuild step)
+COPY backend/services/job-initiation-api/ai-podcast-shared-services-*.tgz ./
 
-# Copy service files
-WORKDIR /app
-COPY backend/services/job-initiation-api ./service
+# Create a temporary package.json that references the packed file
+COPY backend/services/job-initiation-api/package.json ./package.json.orig
+RUN sed 's|"@ai-podcast/shared-services": "file:../../shared-services"|"@ai-podcast/shared-services": "file:./ai-podcast-shared-services-1.0.0.tgz"|' package.json.orig > package.json
 
-# Create proper node_modules structure BEFORE npm ci
-WORKDIR /app/service
-RUN mkdir -p node_modules/@ai-podcast
-RUN cp -r /app/shared-services node_modules/@ai-podcast/shared-services
+# Copy other service files
+COPY backend/services/job-initiation-api/package-lock.json ./
+COPY backend/services/job-initiation-api/tsconfig.json ./
 
-# Now install service dependencies (this won't overwrite our copied shared-services)
+# Install all dependencies (including the packed shared-services)
 RUN npm ci
+
+# Copy source code
+COPY backend/services/job-initiation-api/src ./src
 
 # Build TypeScript
 RUN npm run build
@@ -28,17 +28,21 @@ FROM node:18-alpine AS production
 
 WORKDIR /app
 
-# Copy service package files
-COPY backend/services/job-initiation-api/package*.json ./
+# Copy the packed shared-services
+COPY backend/services/job-initiation-api/ai-podcast-shared-services-*.tgz ./
+
+# Create a temporary package.json that references the packed file
+COPY backend/services/job-initiation-api/package.json ./package.json.orig
+RUN sed 's|"@ai-podcast/shared-services": "file:../../shared-services"|"@ai-podcast/shared-services": "file:./ai-podcast-shared-services-1.0.0.tgz"|' package.json.orig > package.json
+
+# Copy package-lock.json
+COPY backend/services/job-initiation-api/package-lock.json ./
 
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
 
-# Copy shared-services built package to proper location
-COPY --from=builder /app/shared-services ./node_modules/@ai-podcast/shared-services
-
 # Copy built application from builder stage
-COPY --from=builder /app/service/dist ./dist
+COPY --from=builder /app/dist ./dist
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs

@@ -1,18 +1,32 @@
 steps:
-  # Build the container image from repo root
+  # Step 1: Build and pack shared-services
   - name: 'gcr.io/cloud-builders/docker'
     args: [
-      'build', 
-      '-f', 'backend/services/job-initiation-api/Dockerfile',
-      '-t', 'gcr.io/$PROJECT_ID/job-initiation-api:$COMMIT_SHA', 
-      '.'  # Build from repo root
+      'build',
+      '-f', 'backend/shared-services/Dockerfile.pack',
+      '-t', 'shared-services-builder',
+      '.'
     ]
-    
-  # Push the container image to Container Registry
+  
+  # Step 2: Extract the packed shared-services to workspace
+  - name: 'shared-services-builder'
+    entrypoint: 'sh'
+    args: ['-c', 'cp /app/ai-podcast-shared-services-*.tgz /workspace/backend/services/job-initiation-api/']
+  
+  # Step 3: Build the job-initiation-api service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-f', 'backend/services/job-initiation-api/Dockerfile',
+      '-t', 'gcr.io/$PROJECT_ID/job-initiation-api:$COMMIT_SHA',
+      '.'
+    ]
+  
+  # Step 4: Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/job-initiation-api:$COMMIT_SHA']
   
-  # Deploy container image to Cloud Run
+  # Step 5: Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
