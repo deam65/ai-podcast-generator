@@ -3,27 +3,22 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy shared-services package first
+# Copy shared-services and build it first
 COPY backend/shared-services ./shared-services
-
-# Copy service package files
-COPY backend/services/job-initiation-api/package*.json ./service/
-
-# Install shared-services dependencies and build it
 WORKDIR /app/shared-services
 RUN npm ci && npm run build
 
-# Install service dependencies
+# Copy service files
+WORKDIR /app
+COPY backend/services/job-initiation-api ./service
+
+# Create proper node_modules structure BEFORE npm ci
 WORKDIR /app/service
+RUN mkdir -p node_modules/@ai-podcast
+RUN cp -r /app/shared-services node_modules/@ai-podcast/shared-services
 
-# Create a symlink so npm can find the shared-services package
-RUN mkdir -p node_modules/@ai-podcast && \
-    ln -s /app/shared-services node_modules/@ai-podcast/shared-services
+# Now install service dependencies (this won't overwrite our copied shared-services)
 RUN npm ci
-
-# Copy service source code
-COPY backend/services/job-initiation-api/src ./src
-COPY backend/services/job-initiation-api/tsconfig.json ./
 
 # Build TypeScript
 RUN npm run build
@@ -39,7 +34,7 @@ COPY backend/services/job-initiation-api/package*.json ./
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
 
-# Copy shared-services built package
+# Copy shared-services built package to proper location
 COPY --from=builder /app/shared-services ./node_modules/@ai-podcast/shared-services
 
 # Copy built application from builder stage
