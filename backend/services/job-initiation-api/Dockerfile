@@ -3,14 +3,23 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy shared-services package first
+COPY backend/shared-services ./shared-services
 
-# Install ALL dependencies (including dev dependencies for building)
+# Copy service package files
+COPY backend/services/job-initiation-api/package*.json ./service/
+
+# Install shared-services dependencies and build it
+WORKDIR /app/shared-services
+RUN npm ci && npm run build
+
+# Install service dependencies
+WORKDIR /app/service
 RUN npm ci
 
-# Copy source code
-COPY . .
+# Copy service source code
+COPY backend/services/job-initiation-api/src ./src
+COPY backend/services/job-initiation-api/tsconfig.json ./
 
 # Build TypeScript
 RUN npm run build
@@ -20,14 +29,17 @@ FROM node:18-alpine AS production
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy shared-services built package
+COPY --from=builder /app/shared-services ./shared-services
+
+# Copy service package files
+COPY backend/services/job-initiation-api/package*.json ./
 
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application from builder stage
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/service/dist ./dist
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs

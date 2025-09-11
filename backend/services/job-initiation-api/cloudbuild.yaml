@@ -1,14 +1,13 @@
 steps:
-  # Debug step - see what files are in the directory
+  # Build the container image from repo root
   - name: 'gcr.io/cloud-builders/docker'
-    entrypoint: 'ls'
-    args: ['-la', 'backend/services/job-initiation-api/']
-
-  # Build the container image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/job-initiation-api:$COMMIT_SHA', '.']
-    dir: 'backend/services/job-initiation-api'
-
+    args: [
+      'build', 
+      '-f', 'backend/services/job-initiation-api/Dockerfile',
+      '-t', 'gcr.io/$PROJECT_ID/job-initiation-api:$COMMIT_SHA', 
+      '.'  # Build from repo root
+    ]
+    
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/job-initiation-api:$COMMIT_SHA']
