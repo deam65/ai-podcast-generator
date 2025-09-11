@@ -1,5 +1,4 @@
-import { Timestamp } from "@google-cloud/firestore";
-import { BaseFirestoreService, BaseEntity, FirestoreDocument } from "@ai-podcast/shared-services";
+import { BaseFirestoreService, BaseEntity, FirestoreDocument, Timestamp } from "@ai-podcast/shared-services";
 import { Job } from "../models/job";
 import { logger } from "../utils/logger";
 
