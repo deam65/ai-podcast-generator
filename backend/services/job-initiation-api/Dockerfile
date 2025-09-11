@@ -15,6 +15,10 @@ RUN npm ci && npm run build
 
 # Install service dependencies
 WORKDIR /app/service
+
+# Create a symlink so npm can find the shared-services package
+RUN mkdir -p node_modules/@ai-podcast && \
+    ln -s /app/shared-services node_modules/@ai-podcast/shared-services
 RUN npm ci
 
 # Copy service source code
@@ -29,14 +33,14 @@ FROM node:18-alpine AS production
 
 WORKDIR /app
 
-# Copy shared-services built package
-COPY --from=builder /app/shared-services ./shared-services
-
 # Copy service package files
 COPY backend/services/job-initiation-api/package*.json ./
 
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
+
+# Copy shared-services built package
+COPY --from=builder /app/shared-services ./node_modules/@ai-podcast/shared-services
 
 # Copy built application from builder stage
 COPY --from=builder /app/service/dist ./dist
