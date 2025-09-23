@@ -69,7 +69,7 @@ export class JobController {
       res.json({
         jobId: job.id,
         status: job.status,
-        topics: job.topics,
+        categories: job.categories,
         sources: job.sources,
         createdAt: job.createdAt.toISOString(),
         updatedAt: job.updatedAt.toISOString(),

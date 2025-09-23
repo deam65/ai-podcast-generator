@@ -3,15 +3,15 @@ import Joi from 'joi';
 import { logger } from '../utils/logger';
 
 const createJobSchema = Joi.object({  
-  topics: Joi.array()
+  categories: Joi.array()
     .items(Joi.string().trim().min(1).max(100))
     .min(1)
     .max(10)
     .required()
     .messages({
-      'array.base': 'topics must be an array',
+      'array.base': 'categories must be an array',
       'array.min': 'At least one topic is required',
-      'array.max': 'Cannot specify more than 10 topics',
+      'array.max': 'Cannot specify more than 10 categories',
       'string.empty': 'Topic cannot be empty',
       'string.max': 'Topic cannot exceed 100 characters'
     }),

@@ -102,7 +102,7 @@ Expected response:
 curl -X POST http://localhost:3000/api/v1/jobs \
   -H "Content-Type: application/json" \
   -d '{
-    "topics": ["technology", "politics"],
+    "categories": ["technology", "politics"],
     "source": "news"
   }'
 ```
@@ -238,7 +238,7 @@ curl -X POST "$SERVICE_URL/api/v1/jobs" \
   -H "Authorization: Bearer $IDENTITY_TOKEN" \
   -d "{
     \"\": 3,
-    \"topics\": [\"technology\"],
+    \"categories\": [\"technology\"],
     \"source\": \"news\"
   }"
 

@@ -9,7 +9,7 @@ I want to keep up with stuff like policy changes, world conflict, economic state
 ##### Backend will be a microservices-based, event-driven architecture. Initially, it will just operate as a daily ran job that saves specific-topic podcasts to cloud storage that I can access from my laptop/phone
 
 ##### However, I will eventually want to expand it to a web client that allows users to:
-1. select the topics they want to generate a podcast for
+1. select the category they want to generate a podcast for
 2. select the specific voice they want to hear
 
 
@@ -26,7 +26,7 @@ I want to keep up with stuff like policy changes, world conflict, economic state
         2. publish a message to the "content-retrieval" message queue with the following parameters
             - job UUID
             - SSE endpoint
-            - list of specific topics to search (initially will be everything but entertainment/sports)
+            - list of specific categories to search (initially will be everything but entertainment/sports)
             - voice preference (male, female, austrailian, english, etc)
 
 2. content retrieval service
@@ -34,7 +34,7 @@ I want to keep up with stuff like policy changes, world conflict, economic state
     - expected body after parsing message data payload: 
         - job UUID (for error tracking)
         - SSE endpoint (to send updates)
-        - list of specific topics to search (string[])
+        - list of specific categories to search (string[])
     - function:
         1. first make an api call to newsapi.org, pulling news articles of the desired quantity and topic
         2. for each article, check microservice DB for existing data to avoid redundant data pulling

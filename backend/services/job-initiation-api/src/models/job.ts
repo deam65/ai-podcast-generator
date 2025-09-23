@@ -1,6 +1,6 @@
 export interface Job {
   id: string;
-  topics: string[];
+  categories: string[];
   sources: Source[];
   status: 'pending' | 'processing' | 'completed' | 'failed';
   createdAt: Date;
@@ -80,7 +80,7 @@ export type Source =
   | "wired";
 
 export interface CreateJobRequest {
-  topics: string[];
+  categories: string[];
   sources: Source[];
 }
 
