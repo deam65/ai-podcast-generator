@@ -2,20 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 import { logger } from '../utils/logger';
 
-const createJobSchema = Joi.object({
-  numArticles: Joi.number()
-    .integer()
-    .min(1)
-    .max(50)
-    .required()
-    .messages({
-      'number.base': 'numArticles must be a positive integer',
-      'number.integer': 'numArticles must be a positive integer',
-      'number.min': 'numArticles must be a positive integer',
-      'number.max': 'numArticles cannot exceed 50',
-      'any.required': 'numArticles is required'
-    }),
-  
+const createJobSchema = Joi.object({  
   topics: Joi.array()
     .items(Joi.string().trim().min(1).max(100))
     .min(1)

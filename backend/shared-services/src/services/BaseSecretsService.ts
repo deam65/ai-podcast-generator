@@ -2,7 +2,7 @@ import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 import { Logger } from "../types";
 require("dotenv").config();
 
-export class SecretsService {
+export class BaseSecretsService {
   private secretsManagerClient: SecretManagerServiceClient;
   private logger: Logger;
 
@@ -19,13 +19,17 @@ export class SecretsService {
     }
   }
 
-  async fetchSecret(pathname: string): Promise<string | undefined> {
+  async fetchSecret(pathname: string): Promise<string> {
     try {
       const [secretObj] = await this.secretsManagerClient.accessSecretVersion({
         name: pathname + '/versions/latest',
       });
 
       const secretValue = secretObj.payload?.data?.toString("utf-8");
+
+      if (secretValue == undefined) {
+        throw Error('Secret value retrieved but is empty.');
+      }
 
       this.logger.info("Secret value successfully retrieved", {
         path: pathname

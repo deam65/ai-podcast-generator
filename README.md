@@ -18,8 +18,7 @@ I want to keep up with stuff like policy changes, world conflict, economic state
     - takes incoming API requests to begin the content retrieval/podcast generation job loop
     - should ideally respond with a job UUID and SSE endpoint, in case I want to add a web interface
         - SSE endpoint is for web client to subscribe to - so that it can receive updates from the different microservices and maintain a "generation progress" bar
-    - expected input: 
-        - numArticles (int)
+    - expected input from REST API entry point: 
         - topic (string[])
         - source ('news', 'twitter', 'reddit')
     - function:
@@ -27,33 +26,19 @@ I want to keep up with stuff like policy changes, world conflict, economic state
         2. publish a message to the "content-retrieval" message queue with the following parameters
             - job UUID
             - SSE endpoint
-            - numArticles to search
             - list of specific topics to search (initially will be everything but entertainment/sports)
             - voice preference (male, female, austrailian, english, etc)
 
 2. content retrieval service
     - subscribes to a "content-retrieval" message queue
-    - should be written in typescript, because typescript is the native language for playwright
-    - expected input:
+    - expected body after parsing message data payload: 
         - job UUID (for error tracking)
         - SSE endpoint (to send updates)
-        - numArticles to search (int)
         - list of specific topics to search (string[])
     - function:
         1. first make an api call to newsapi.org, pulling news articles of the desired quantity and topic
-        2. for each article, check microservice DB for existing data. otherwise, access and scrape the content using playwright
-            - store url and content, to avoid redundant content scraping
-            - form an array of objects, which should take the form
-            - articles: [
-                {
-                    url: string
-                    name: string
-                    description: string
-                    content: string
-                },
-                ...,
-                { ... }
-            ]
+        2. for each article, check microservice DB for existing data to avoid redundant data pulling
+            - we'll want to pull multiple articles from several "opinionated" sources, primarily because one source could be too biased/uninformed on the topic. I want to be as informed as possible
         3. publish a message to the "content-summary" message queue with the following parameters
             - job UUID
             - SSE endpoint
@@ -61,14 +46,14 @@ I want to keep up with stuff like policy changes, world conflict, economic state
 
 3. llm summary service
     - subscribes to "content-summary" message queue
-    - expected input:
+    - expected body after parsing message data payload: 
         - job UUID
         - SSE endpoint
         - array of article CONTENT
 
 4. llm transcription service
     - subscribes to "transcript-generation" message queue
-    - expected input: 
+    - expected body after parsing message data payload: 
         - job UUID
         - SSE endpoint
         - list of article SUMMARIES
@@ -76,3 +61,13 @@ I want to keep up with stuff like policy changes, world conflict, economic state
 5. audio generation service
 
 6. podcast publishing services
+
+7. sse service
+    - subscribes to "sse-updates" message queue
+    - expected body after parsing message data payload: 
+        - job uuid: string
+        - SSE endpoint: string
+        - progress percentage: int
+        - originating service: string
+    - function:
+        1. send request to SSE endpoint URL

@@ -8,4 +8,4 @@ export { Timestamp } from "@google-cloud/firestore";
 // Export services
 export { BaseFirestoreService } from "./services/BaseFirestoreService";
 export { BasePubSubService } from "./services/BasePubSubService";
-export { SecretsService } from "./services/SecretsService";
+export { BaseSecretsService } from "./services/BaseSecretsService";
