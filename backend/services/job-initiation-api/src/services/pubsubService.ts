@@ -21,7 +21,7 @@ export class PubSubService extends BasePubSubService {
       const messagePayload = {
         jobId: job.id,
         sseEndpoint: job.sseEndpoint,
-        topics: job.topics,
+        categories: job.categories,
         sources: job.sources,
       };
 

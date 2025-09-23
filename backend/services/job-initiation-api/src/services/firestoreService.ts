@@ -14,7 +14,7 @@ export class FirestoreService extends BaseFirestoreService<JobEntity> {
   protected transformToFirestore(job: JobEntity): FirestoreDocument {
     return {
       id: job.id,
-      topics: job.topics,
+      categories: job.categories,
       sources: job.sources,
       status: job.status,
       createdAt: Timestamp.fromDate(job.createdAt),
@@ -26,7 +26,7 @@ export class FirestoreService extends BaseFirestoreService<JobEntity> {
   protected transformFromFirestore(doc: FirestoreDocument): JobEntity {
     return {
       id: doc.id,
-      topics: doc.topics,
+      categories: doc.categories,
       sources: doc.sources,
       status: doc.status,
       createdAt: doc.createdAt.toDate(),
