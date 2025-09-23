@@ -1,26 +1,50 @@
 steps:
-  # Build the container image
+  # Step 1: Build and pack shared-services
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/content-retrieval-service:$COMMIT_SHA', '.']
+    args: [
+      'build',
+      '-f', 'backend/shared-services/Dockerfile.pack',
+      '-t', 'shared-services-builder',
+      '.'
+    ]
   
-  # Push the container image to Container Registry
+  # Step 2: Extract the packed shared-services to workspace
+  - name: 'shared-services-builder'
+    entrypoint: 'sh'
+    args: ['-c', 'cp /app/ai-podcast-shared-services-*.tgz /workspace/backend/services/content-retrieval-service/']
+  
+  # Step 3: Build the content-retrieval-service service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-f', 'backend/services/content-retrieval-service/Dockerfile',
+      '-t', 'gcr.io/$PROJECT_ID/content-retrieval-service:$COMMIT_SHA',
+      '.'
+    ]
+  
+  # Step 4: Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/content-retrieval-service:$COMMIT_SHA']
   
-  # Deploy container image to Cloud Run
+  # Step 5: Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
-      - 'run'
-      - 'deploy'
-      - 'content-retrieval-service'
-      - '--image'
-      - 'gcr.io/$PROJECT_ID/content-retrieval-service:$COMMIT_SHA'
-      - '--region'
-      - 'us-central1'
-      - '--platform'
-      - 'managed'
-      - '--allow-unauthenticated'
+    - 'run'
+    - 'deploy'
+    - 'content-retrieval-service'
+    - '--image'
+    - 'gcr.io/$PROJECT_ID/content-retrieval-service:$COMMIT_SHA'
+    - '--region'
+    - 'us-central1'
+    - '--platform'
+    - 'managed'
+    - '--allow-unauthenticated'
+    - '--set-env-vars'
+    - 'GOOGLE_CLOUD_PROJECT_ID=$PROJECT_ID,FIRESTORE_JOBS_COLLECTION=jobs,PUBSUB_CONTENT_RETRIEVAL_TOPIC=content-retrieval'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
 
 images:
   - 'gcr.io/$PROJECT_ID/content-retrieval-service:$COMMIT_SHA'

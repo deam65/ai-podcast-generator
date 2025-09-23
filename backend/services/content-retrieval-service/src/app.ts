@@ -22,8 +22,8 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Routes
-// TODO: Add your routes here
+// Excluding routes because this microservice is event driven, 
+// and should not be accessible through a REST endpoint
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
