@@ -1,4 +1,4 @@
-import { BasePubSubService, Message, Subscription } from "@ai-podcast/shared-services";
+import { BasePubSubService, Message, MessagePayload, Subscription } from "@ai-podcast/shared-services";
 import { logger } from "../utils/logger";
 import { Content, ContentRetrievalJob } from "../models/contentRetrieval";
 import { LLMSummaryJob } from "../models/llmSummary";
@@ -27,36 +27,13 @@ export class PubSubService extends BasePubSubService {
     });
   }
 
-  handleMessage(message: Message) {
+  subscribeToContentRetrievalTopic(messageProcessor: (data: MessagePayload) => Promise<void>): Subscription {
     try {
-      const data = JSON.parse(message.data.toString());
-
-      this.logger.info("Received message", {
-        messageId: message.id,
-        data: data,
-      });
-
-      message.ack();
-
-    } catch (e) {
-      this.logger.error("Error processing message", {
-        message,
-        e,
-      });
-      message.nack();
-    }
-  }
-
-  handleError(error: Error) {
-    this.logger.error("Subscription error", { error });
-  }
-
-  subscribeToTopic(): Subscription {
-    try {
-      const subscription: Subscription = this.createSubscription(this.contentRetrievalTopic);
-
-      subscription.on("message", this.handleMessage.bind(this));
-      subscription.on("error", this.handleError.bind(this));
+      // Use the BasePubSubService method with our message processor
+      const subscription = super.subscribeToTopic(
+        this.contentRetrievalTopic,
+        messageProcessor
+      );
 
       this.logger.info(
         'PubSub service subscribed to "' + this.contentRetrievalTopic + '"'
@@ -73,7 +50,7 @@ export class PubSubService extends BasePubSubService {
     }
   }
 
-  async publishContentMessage(
+  async publishToLLMSummaryTopic(
     job: LLMSummaryJob,
     content: Content
   ): Promise<void> {

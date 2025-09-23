@@ -3,6 +3,7 @@ import app from "./app";
 import { PubSubService } from "./services/pubsubService";
 import { logger } from "./utils/logger";
 import { Subscription } from "@ai-podcast/shared-services";
+import { ContentRetrievalController } from "./controllers/contentRetrievalController";
 
 // Load environment variables
 dotenv.config();
@@ -10,6 +11,7 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 
 const pubsubService = new PubSubService();
+const contentRetrievalController = new ContentRetrievalController();
 let subscription: Subscription | undefined = undefined;
 
 // Start server
@@ -18,7 +20,10 @@ app.listen(PORT, () => {
   logger.info(`Environment: ${process.env.NODE_ENV || "development"}`);
 
   try {
-    subscription = pubsubService.subscribeToTopic();
+    // Create message processor using direct controller method
+    const messageProcessor = (data: any) => contentRetrievalController.handleMessage(data);
+    subscription = pubsubService.subscribeToContentRetrievalTopic(messageProcessor);
+    
     logger.info('PubSub subscription initialized successfully');
   } catch (error) {
     logger.error("Failed to initialize Pub/Sub subscription", { error });
