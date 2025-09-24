@@ -5,6 +5,7 @@ import { LLMSummaryJob } from "../models/llmSummary";
 
 export class PubSubService extends BasePubSubService {
   private contentRetrievalTopic: string;
+  private contentRetrievalSubscription: string;
   private llmSummaryTopic: string;
   private sseUpdatesTopic: string;
 
@@ -14,6 +15,9 @@ export class PubSubService extends BasePubSubService {
     this.contentRetrievalTopic =
       process.env.PUBSUB_CONTENT_RETRIEVAL_TOPIC || "content-retrieval";
 
+    this.contentRetrievalSubscription =
+      process.env.PUBSUB_CONTENT_RETRIEVAL_SUBSCRIPTION || "content-retrieval-sub";
+
     this.llmSummaryTopic =
       process.env.PUBSUB_LLM_SUMMARY_TOPIC || "llm-summary";
 
@@ -22,6 +26,7 @@ export class PubSubService extends BasePubSubService {
 
     this.logger.info("PubSubService initialized", {
       contentRetrievalTopic: this.contentRetrievalTopic,
+      contentRetrievalSubscription: this.contentRetrievalSubscription,
       llmSummaryTopic: this.llmSummaryTopic,
       sseUpdatesTopic: this.sseUpdatesTopic,
     });
@@ -29,14 +34,15 @@ export class PubSubService extends BasePubSubService {
 
   subscribeToContentRetrievalTopic(messageProcessor: (data: MessagePayload) => Promise<void>): Subscription {
     try {
-      // Use the BasePubSubService method with our message processor
+      // Use the BasePubSubService method with our message processor and explicit subscription name
       const subscription = super.subscribeToTopic(
         this.contentRetrievalTopic,
-        messageProcessor
+        messageProcessor,
+        this.contentRetrievalSubscription
       );
 
       this.logger.info(
-        'PubSub service subscribed to "' + this.contentRetrievalTopic + '"'
+        'PubSub service subscribed to topic "' + this.contentRetrievalTopic + '" with subscription "' + this.contentRetrievalSubscription + '"'
       );
 
       return subscription;
@@ -44,6 +50,8 @@ export class PubSubService extends BasePubSubService {
       this.logger.error(
         'PubSub service failed to subscribe to topic "' +
           this.contentRetrievalTopic +
+          '" with subscription "' +
+          this.contentRetrievalSubscription +
           '"'
       );
       throw e;
