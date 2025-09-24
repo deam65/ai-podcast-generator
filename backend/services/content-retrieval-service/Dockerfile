@@ -3,21 +3,24 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy the packed shared-services (created by cloudbuild step)
+COPY backend/services/content-retrieval-service/ai-podcast-shared-services-*.tgz ./
 
-# Copy the packed shared-services tarball (created by Cloud Build step 2)
-COPY ai-podcast-shared-services-*.tgz ./
+# Create a temporary package.json that references the packed file
+COPY backend/services/content-retrieval-service/package.json ./package.json.orig
+RUN sed 's|"@ai-podcast/shared-services": "file:../../shared-services"|"@ai-podcast/shared-services": "file:./ai-podcast-shared-services-1.0.0.tgz"|' package.json.orig > package.json
 
-# Remove the file dependency and install the packed tarball instead
-RUN sed -i 's|"@ai-podcast/shared-services": "file:../../shared-services"|"@ai-podcast/shared-services": "file:./ai-podcast-shared-services-1.0.0.tgz"|' package.json
+# Copy other service files
+COPY backend/services/content-retrieval-service/tsconfig.json ./
 
-# Install ALL dependencies (including dev dependencies for building)
-# Use npm install instead of npm ci since we modified package.json
-RUN npm install
+# Regenerate package-lock.json to match the modified package.json
+RUN npm install --package-lock-only
+
+# Install all dependencies (including the packed shared-services)
+RUN npm ci
 
 # Copy source code
-COPY . .
+COPY backend/services/content-retrieval-service/src ./src
 
 # Build TypeScript
 RUN npm run build
@@ -27,18 +30,18 @@ FROM node:18-alpine AS production
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy the packed shared-services
+COPY backend/services/content-retrieval-service/ai-podcast-shared-services-*.tgz ./
 
-# Copy the packed shared-services tarball
-COPY ai-podcast-shared-services-*.tgz ./
+# Create a temporary package.json that references the packed file
+COPY backend/services/content-retrieval-service/package.json ./package.json.orig
+RUN sed 's|"@ai-podcast/shared-services": "file:../../shared-services"|"@ai-podcast/shared-services": "file:./ai-podcast-shared-services-1.0.0.tgz"|' package.json.orig > package.json
 
-# Remove the file dependency and install the packed tarball instead
-RUN sed -i 's|"@ai-podcast/shared-services": "file:../../shared-services"|"@ai-podcast/shared-services": "file:./ai-podcast-shared-services-1.0.0.tgz"|' package.json
+# Regenerate package-lock.json to match the modified package.json
+RUN npm install --package-lock-only
 
 # Install only production dependencies
-# Use npm install instead of npm ci since we modified package.json
-RUN npm install --only=production && npm cache clean --force
+RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
@@ -51,8 +54,8 @@ RUN adduser -S nodejs -u 1001
 RUN chown -R nodejs:nodejs /app
 USER nodejs
 
-# Expose port
-EXPOSE 8080
+# # Expose port
+# EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
