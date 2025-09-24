@@ -19,7 +19,7 @@ steps:
       'build',
       '-f', 'backend/services/content-retrieval-service/Dockerfile',
       '-t', 'gcr.io/$PROJECT_ID/content-retrieval-service:$COMMIT_SHA',
-      'backend/services/content-retrieval-service'
+      '.'
     ]
   
   # Step 4: Push the container image to Container Registry
