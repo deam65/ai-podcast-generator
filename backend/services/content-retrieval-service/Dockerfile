@@ -13,7 +13,8 @@ COPY ai-podcast-shared-services-*.tgz ./
 RUN sed -i 's|"@ai-podcast/shared-services": "file:../../shared-services"|"@ai-podcast/shared-services": "file:./ai-podcast-shared-services-1.0.0.tgz"|' package.json
 
 # Install ALL dependencies (including dev dependencies for building)
-RUN npm ci
+# Use npm install instead of npm ci since we modified package.json
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -36,7 +37,8 @@ COPY ai-podcast-shared-services-*.tgz ./
 RUN sed -i 's|"@ai-podcast/shared-services": "file:../../shared-services"|"@ai-podcast/shared-services": "file:./ai-podcast-shared-services-1.0.0.tgz"|' package.json
 
 # Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Use npm install instead of npm ci since we modified package.json
+RUN npm install --only=production && npm cache clean --force
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
