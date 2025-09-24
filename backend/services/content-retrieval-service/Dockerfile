@@ -9,8 +9,8 @@ COPY package*.json ./
 # Copy the packed shared-services tarball (created by Cloud Build step 2)
 COPY ai-podcast-shared-services-*.tgz ./
 
-# Install the packed shared-services first
-RUN npm install ai-podcast-shared-services-*.tgz
+# Remove the file dependency and install the packed tarball instead
+RUN sed -i 's|"@ai-podcast/shared-services": "file:../../shared-services"|"@ai-podcast/shared-services": "file:./ai-podcast-shared-services-1.0.0.tgz"|' package.json
 
 # Install ALL dependencies (including dev dependencies for building)
 RUN npm ci
@@ -32,8 +32,8 @@ COPY package*.json ./
 # Copy the packed shared-services tarball
 COPY ai-podcast-shared-services-*.tgz ./
 
-# Install the packed shared-services first
-RUN npm install ai-podcast-shared-services-*.tgz
+# Remove the file dependency and install the packed tarball instead
+RUN sed -i 's|"@ai-podcast/shared-services": "file:../../shared-services"|"@ai-podcast/shared-services": "file:./ai-podcast-shared-services-1.0.0.tgz"|' package.json
 
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
