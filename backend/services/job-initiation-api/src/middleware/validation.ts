@@ -14,14 +14,6 @@ const createJobSchema = Joi.object({
       'array.max': 'Cannot specify more than 10 categories',
       'string.empty': 'Topic cannot be empty',
       'string.max': 'Topic cannot exceed 100 characters'
-    }),
-  
-  source: Joi.string()
-    .valid('news', 'twitter', 'reddit')
-    .required()
-    .messages({
-      'any.only': 'source must be one of: news, twitter, reddit',
-      'any.required': 'source is required'
     })
 });
 

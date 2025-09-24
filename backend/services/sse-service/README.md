@@ -152,7 +152,7 @@ const response = await fetch('/api/v1/jobs', {
   method: 'POST', 
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    topics: ['technology'],
+    categories: ['technology'],
     sources: ['techcrunch', 'ars-technica']
   })
 });

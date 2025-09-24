@@ -22,7 +22,6 @@ export class PubSubService extends BasePubSubService {
         jobId: job.id,
         sseEndpoint: job.sseEndpoint,
         categories: job.categories,
-        sources: job.sources,
       };
 
       const messageId = await this.publishMessage(

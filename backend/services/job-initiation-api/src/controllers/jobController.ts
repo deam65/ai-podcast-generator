@@ -70,7 +70,6 @@ export class JobController {
         jobId: job.id,
         status: job.status,
         categories: job.categories,
-        sources: job.sources,
         createdAt: job.createdAt.toISOString(),
         updatedAt: job.updatedAt.toISOString(),
         sseEndpoint: job.sseEndpoint

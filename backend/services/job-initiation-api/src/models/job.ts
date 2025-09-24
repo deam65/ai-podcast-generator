@@ -1,7 +1,6 @@
 export interface Job {
   id: string;
   categories: string[];
-  sources: Source[];
   status: 'pending' | 'processing' | 'completed' | 'failed';
   createdAt: Date;
   updatedAt: Date;
@@ -81,7 +80,6 @@ export type Source =
 
 export interface CreateJobRequest {
   categories: string[];
-  sources: Source[];
 }
 
 export interface CreateJobResponse {
