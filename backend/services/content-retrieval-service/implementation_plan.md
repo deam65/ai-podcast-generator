@@ -28,8 +28,7 @@ interface Article {
 interface ContentRetrievalMessage {
   jobId: string;
   sseEndpoint: string;
-  numArticles: number;
-  topics: string[];
+  categories: string[];
   source: 'news' | 'twitter' | 'reddit';
 }
 
@@ -95,8 +94,8 @@ Define core service functions for message processing, content retrieval, and dat
 - `validateMessage(message: any): ContentRetrievalMessage` - Message validation
 
 **NewsAPI Integration Functions:**
-- `fetchArticles(topics: string[], numArticles: number): Promise<NewsAPIArticle[]>` - Fetch from NewsAPI
-- `buildNewsAPIQuery(topics: string[]): string` - Construct API query parameters
+- `fetchArticles(categories: string[]): Promise<NewsAPIArticle[]>` - Fetch from NewsAPI
+- `buildNewsAPIQuery(categoryies: string[]): string` - Construct API query parameters
 
 **Web Scraping Functions:**
 - `scrapeArticleContent(url: string): Promise<string>` - Playwright content extraction
@@ -223,7 +222,7 @@ Sequential implementation steps to minimize conflicts and ensure successful inte
 4. **NewsAPI Integration**
    - Implement NewsApiService class
    - Add API key configuration and rate limiting
-   - Test article fetching with various topics
+   - Test article fetching with various categories
 
 5. **Web Scraping Service**
    - Implement ScrapingService with Playwright
