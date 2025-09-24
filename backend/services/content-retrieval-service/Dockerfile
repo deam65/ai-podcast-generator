@@ -6,6 +6,12 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
+# Copy the packed shared-services tarball (created by Cloud Build step 2)
+COPY ai-podcast-shared-services-*.tgz ./
+
+# Install the packed shared-services first
+RUN npm install ai-podcast-shared-services-*.tgz
+
 # Install ALL dependencies (including dev dependencies for building)
 RUN npm ci
 
@@ -22,6 +28,12 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+
+# Copy the packed shared-services tarball
+COPY ai-podcast-shared-services-*.tgz ./
+
+# Install the packed shared-services first
+RUN npm install ai-podcast-shared-services-*.tgz
 
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
