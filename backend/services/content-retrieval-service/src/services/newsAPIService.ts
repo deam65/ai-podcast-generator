@@ -9,6 +9,7 @@ export class NewsAPIService {
 
   private secretsService: SecretsService;
   private newsAPIKeySecretsPath: string;
+  private newsAPIKeySecretsVersion: string;
 
   // private firestoreService: FirestoreService;
 
@@ -17,6 +18,8 @@ export class NewsAPIService {
       this.secretsService = new SecretsService();
       this.newsAPIKeySecretsPath =
         process.env.SECRETS_MANAGER_NEWSAPI_APIKEY_PATH || "none";
+      this.newsAPIKeySecretsVersion =
+        process.env.SECRETS_MANAGER_NEWSAPI_APIKEY_VERSION || 'none';
 
       // this.firestoreService = new FirestoreService();
     } catch (e) {
@@ -31,7 +34,8 @@ export class NewsAPIService {
   ): Promise<Article[]> {
     try {
       const newsAPIKey = await this.secretsService.fetchSecret(
-        this.newsAPIKeySecretsPath
+        this.newsAPIKeySecretsPath,
+        this.newsAPIKeySecretsVersion
       );
 
       const categoryURLParam = "category=" + category;
