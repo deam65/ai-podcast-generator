@@ -19,11 +19,11 @@ export const logger = {
         severity: 'INFO',
         timestamp: new Date(),
       },
-      {
+      JSON.stringify({
         message,
         service: SERVICE_NAME,
         ...meta,
-      }
+      })
     );
     log.write(entry);
   },
@@ -34,7 +34,7 @@ export const logger = {
         severity: 'ERROR',
         timestamp: new Date(),
       },
-      {
+      JSON.stringify({
         message,
         service: SERVICE_NAME,
         error: error instanceof Error ? {
@@ -42,7 +42,7 @@ export const logger = {
           message: error.message,
           stack: error.stack,
         } : error,
-      }
+      })
     );
     log.write(entry);
   },
@@ -53,11 +53,11 @@ export const logger = {
         severity: 'WARNING',
         timestamp: new Date(),
       },
-      {
+      JSON.stringify({
         message,
         service: SERVICE_NAME,
         ...meta,
-      }
+      })
     );
     log.write(entry);
   },
@@ -68,11 +68,11 @@ export const logger = {
         severity: 'DEBUG',
         timestamp: new Date(),
       },
-      {
+      JSON.stringify({
         message,
         service: SERVICE_NAME,
         ...meta,
-      }
+      })
     );
     log.write(entry);
   },
