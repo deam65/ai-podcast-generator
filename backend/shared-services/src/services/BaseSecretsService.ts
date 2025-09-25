@@ -19,10 +19,10 @@ export class BaseSecretsService {
     }
   }
 
-  async fetchSecret(pathname: string): Promise<string> {
+  async fetchSecret(pathname: string, version: string): Promise<string> {
     try {
       const [secretObj] = await this.secretsManagerClient.accessSecretVersion({
-        name: pathname + '/versions/latest',
+        name: pathname + '/versions/' + version,
       });
 
       const secretValue = secretObj.payload?.data?.toString("utf-8");

@@ -14,9 +14,9 @@ export const validateMessagePayload = (data: MessagePayload): ContentRetrievalJo
     throw new Error('Invalid message data: must be an object');
   }
 
-  const { id, categories, status, createdAt, updatedAt, sseEndpoint } = data as any;
+  const { jobId, categories, status, createdAt, updatedAt, sseEndpoint } = data as any;
 
-  if (!id || typeof id !== 'string') {
+  if (!jobId || typeof jobId !== 'string') {
     throw new Error('Invalid message data: missing or invalid job ID');
   }
 
@@ -36,13 +36,13 @@ export const validateMessagePayload = (data: MessagePayload): ContentRetrievalJo
   }
 
   logger.info('Message payload validated successfully', {
-    jobId: id,
+    jobId: jobId,
     categoriesCount: categories.length,
     sseEndpoint
   });
 
   return {
-    id,
+    id: jobId,
     categories,
     status: status || 'pending',
     createdAt: createdAt ? new Date(createdAt) : new Date(),
