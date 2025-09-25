@@ -15,7 +15,6 @@ export class FirestoreService extends BaseFirestoreService<JobEntity> {
     return {
       id: job.id,
       categories: job.categories,
-      sources: job.sources,
       status: job.status,
       createdAt: Timestamp.fromDate(job.createdAt),
       updatedAt: Timestamp.fromDate(job.updatedAt),
@@ -27,7 +26,6 @@ export class FirestoreService extends BaseFirestoreService<JobEntity> {
     return {
       id: doc.id,
       categories: doc.categories,
-      sources: doc.sources,
       status: doc.status,
       createdAt: doc.createdAt.toDate(),
       updatedAt: doc.updatedAt.toDate(),

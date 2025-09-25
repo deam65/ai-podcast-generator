@@ -41,7 +41,11 @@ steps:
     - 'managed'
     - '--allow-unauthenticated'
     - '--set-env-vars'
-    - 'GOOGLE_CLOUD_PROJECT_ID=$PROJECT_ID,FIRESTORE_JOBS_COLLECTION=jobs,PUBSUB_CONTENT_RETRIEVAL_TOPIC=content-retrieval'
+    - >-
+      GOOGLE_CLOUD_PROJECT_ID=$PROJECT_ID,
+      SERVICE_NAME=job-initiation,
+      FIRESTORE_JOBS_COLLECTION=jobs,
+      PUBSUB_CONTENT_RETRIEVAL_TOPIC=content-retrieval
 
 options:
   logging: CLOUD_LOGGING_ONLY
