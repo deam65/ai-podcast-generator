@@ -22,7 +22,7 @@ export class BaseSecretsService {
   async fetchSecret(pathname: string): Promise<string> {
     try {
       const [secretObj] = await this.secretsManagerClient.accessSecretVersion({
-        name: pathname + '/versions/latest',
+        name: pathname,
       });
 
       const secretValue = secretObj.payload?.data?.toString("utf-8");
